@@ -1,0 +1,15 @@
+# Copie este arquivo para %USERPROFILE%\.nexuschat\config.properties
+# (ou ~/.nexuschat/config.properties) se preferir não usar variáveis de ambiente.
+# Variáveis de ambiente têm prioridade sobre este arquivo. NUNCA versione o arquivo real.
+
+MONGODB_URI=mongodb+srv://USUARIO:SENHA@SEU-CLUSTER.mongodb.net/?retryWrites=true&w=majority
+MONGODB_DATABASE=nexuschat
+GROQ_API_KEY=gsk_sua_chave_aqui
+GROQ_MODEL=llama-3.3-70b-versatile
+
+# Opcional: envio do código de recuperação de senha por e-mail (ex.: Gmail com senha de app)
+# SMTP_HOST=smtp.gmail.com
+# SMTP_PORT=587
+# SMTP_USER=seu.email@gmail.com
+# SMTP_PASSWORD=senha_de_app
+# SMTP_FROM=seu.email@gmail.com

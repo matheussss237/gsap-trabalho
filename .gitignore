@@ -1,0 +1,23 @@
+# Build
+target/
+*.class
+
+# Credenciais — NUNCA versionar
+.env
+*.env
+config.properties
+!config.properties.example
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+bin/
+
+# Sistema
+.DS_Store
+Thumbs.db
