@@ -1,0 +1,46 @@
+/* Tema claro — define apenas a paleta; o layout fica em base.css */
+.root {
+    -color-bg: #f6f6fb;
+    -color-surface: #ffffff;
+    -color-surface-2: #f1f0f8;
+    -color-sidebar: #efeef7;
+    -color-border: #e0dfee;
+    -color-text: #1c1b2e;
+    -color-text-muted: #6b6a85;
+    -color-accent: #6a4cf5;
+    -color-accent-hover: #5a3df0;
+    -color-accent-2: #0891b2;
+    -color-accent-soft: rgba(106, 76, 245, 0.10);
+    -color-user-bubble: linear-gradient(to bottom right, #6a4cf5, #4f63f7);
+    -color-user-text: #ffffff;
+    -color-assistant-bubble: #ffffff;
+    -color-input: #ffffff;
+    -color-hover: #e6e5f3;
+    -color-selected: #dedaf8;
+    -color-danger: #e11d48;
+    -color-danger-soft: rgba(225, 29, 72, 0.08);
+    -color-success: #059669;
+    -color-success-soft: rgba(5, 150, 105, 0.10);
+    -color-info: #0369a1;
+    -color-info-soft: rgba(3, 105, 161, 0.08);
+    -color-code-bg: #f3f2fa;
+    -color-brand-bg: linear-gradient(to bottom right, #6a4cf5, #4f46e5 55%, #0891b2);
+    -color-shadow: rgba(40, 30, 90, 0.10);
+
+    -fx-base: #f1f0f8;
+    -fx-background: #f6f6fb;
+    -fx-control-inner-background: #ffffff;
+    -fx-accent: #6a4cf5;
+    -fx-focus-color: #6a4cf5;
+    -fx-faint-focus-color: rgba(106, 76, 245, 0.15);
+    -fx-text-base-color: #1c1b2e;
+    -fx-text-background-color: #1c1b2e;
+    -fx-prompt-text-fill: #9a99b3;
+}
+
+/* no tema claro o painel da marca é colorido, então o texto dele é branco */
+.brand-panel .brand-tagline,
+.brand-panel .feature-description,
+.brand-panel .brand-footer {
+    -fx-text-fill: rgba(255, 255, 255, 0.82);
+}
