@@ -1,0 +1,62 @@
+[
+  {
+    "title": "Encapsulamento em Java",
+    "keywords": ["encapsulamento", "java", "poo", "orientação a objetos", "getter", "setter", "private"],
+    "content": "Encapsulamento é o princípio da programação orientada a objetos que esconde o estado interno de um objeto e expõe apenas operações controladas. Em Java, os atributos são declarados como private e o acesso ocorre por métodos públicos (getters e setters) ou, melhor ainda, por métodos com significado de negócio. Vantagens: validação centralizada, menor acoplamento e liberdade para alterar a implementação sem quebrar quem usa a classe. Exemplo: a classe ContaBancaria mantém o saldo como private e só permite alterá-lo por depositar() e sacar(), que validam valores negativos."
+  },
+  {
+    "title": "JavaFX: Stage, Scene e Nodes",
+    "keywords": ["javafx", "stage", "scene", "node", "interface gráfica", "layout", "vbox", "hbox", "borderpane"],
+    "content": "Uma aplicação JavaFX estende javafx.application.Application e implementa start(Stage). O Stage é a janela; a Scene é o conteúdo da janela; os Nodes formam o grafo de cena (scene graph). Layouts comuns: VBox (vertical), HBox (horizontal), BorderPane (top, left, center, right, bottom), GridPane (grade) e StackPane (sobreposição). A estilização é feita com JavaFX CSS, usando propriedades com prefixo -fx-, por exemplo -fx-background-color. Operações demoradas devem rodar fora da JavaFX Application Thread, com Task ou CompletableFuture, e atualizar a interface com Platform.runLater."
+  },
+  {
+    "title": "JavaFX CSS e temas",
+    "keywords": ["css", "javafx", "tema", "tema escuro", "tema claro", "stylesheet", "estilo"],
+    "content": "No JavaFX, folhas de estilo são adicionadas com scene.getStylesheets().add(url). Para trocar de tema basta remover a folha atual e adicionar a nova, por exemplo light.css e dark.css. Cores podem ser definidas como looked-up colors no seletor .root (ex.: -color-bg: #ffffff;) e reutilizadas nos demais seletores, o que permite que cada tema redefina apenas a paleta. Classes CSS são atribuídas com node.getStyleClass().add(\"nome\")."
+  },
+  {
+    "title": "MongoDB e MongoDB Atlas",
+    "keywords": ["mongodb", "atlas", "banco de dados", "nosql", "coleção", "documento", "bson", "cluster"],
+    "content": "MongoDB é um banco de dados NoSQL orientado a documentos. Os dados ficam em coleções (collections) de documentos BSON, semelhantes a JSON. Cada documento possui um campo _id único, normalmente um ObjectId. O MongoDB Atlas é o serviço gerenciado na nuvem: cria-se um cluster, um usuário de banco (Database Access) e libera-se o IP em Network Access. A conexão usa uma URI no formato mongodb+srv://usuario:senha@cluster.mongodb.net/, que já utiliza TLS. Em Java usa-se o driver mongodb-driver-sync com MongoClients.create(uri)."
+  },
+  {
+    "title": "Operações CRUD no MongoDB com Java",
+    "keywords": ["crud", "mongodb", "insertone", "find", "updateone", "deleteone", "filters", "java"],
+    "content": "CRUD significa Create, Read, Update e Delete. No driver Java: insertOne(document) cria; find(Filters.eq(\"campo\", valor)) consulta; updateOne(filtro, Updates.set(\"campo\", valor)) altera; deleteOne(filtro) exclui. Para garantir isolamento por usuário, o filtro deve sempre combinar o _id do registro com o userId do dono: Filters.and(Filters.eq(\"_id\", id), Filters.eq(\"userId\", userId)). Índices como createIndex(Indexes.ascending(\"email\"), new IndexOptions().unique(true)) evitam duplicidade."
+  },
+  {
+    "title": "Arquitetura MVC com Service e Repository",
+    "keywords": ["mvc", "arquitetura", "controller", "service", "repository", "camadas", "view", "model"],
+    "content": "Na arquitetura em camadas, a View apresenta a interface; o Controller recebe eventos da View e delega; o Service concentra as regras de negócio e validações; o Repository isola o acesso ao banco de dados; o Model representa os dados. O fluxo é View → Controller → Service → Repository → banco. Essa separação facilita testes (Services podem ser testados com repositórios falsos em memória), manutenção e troca de tecnologia de persistência."
+  },
+  {
+    "title": "Armazenamento seguro de senhas com BCrypt",
+    "keywords": ["senha", "bcrypt", "hash", "segurança", "salt", "criptografia"],
+    "content": "Senhas nunca devem ser armazenadas em texto puro nem com criptografia reversível. Utiliza-se uma função de hash lenta e com salt, como BCrypt. O salt aleatório impede ataques com tabelas pré-calculadas (rainbow tables) e o fator de custo torna ataques de força bruta caros. Na verificação, o sistema calcula o hash da senha digitada com o mesmo salt e compara. Por isso é impossível 'recuperar' a senha original: a recuperação deve gerar um token temporário para que o usuário defina uma nova senha."
+  },
+  {
+    "title": "RAG — Retrieval-Augmented Generation",
+    "keywords": ["rag", "recuperação", "contexto", "llm", "stop words", "palavras-chave", "ia"],
+    "content": "RAG (Geração Aumentada por Recuperação) é uma técnica em que, antes de enviar a pergunta ao modelo de linguagem, o sistema busca informações relevantes em uma base de conhecimento e as inclui no prompt como contexto. Na versão por palavras-chave, a pergunta é normalizada (minúsculas e sem acentos), tokenizada, as stop words são removidas e as palavras restantes são usadas na busca. Os documentos encontrados recebem uma pontuação e os melhores são enviados ao modelo, reduzindo alucinações e permitindo respostas sobre dados internos."
+  },
+  {
+    "title": "Política de home office da empresa",
+    "keywords": ["home office", "trabalho remoto", "política", "empresa", "rh", "híbrido"],
+    "content": "A política interna de trabalho híbrido da empresa estabelece: colaboradores podem trabalhar em home office até 3 dias por semana; terças e quintas-feiras são dias presenciais obrigatórios para todas as equipes; o horário núcleo, em que todos devem estar disponíveis, é das 10h às 16h; a empresa oferece auxílio home office de R$ 150,00 mensais pago junto com o salário; solicitações de exceção devem ser feitas ao gestor direto com 5 dias úteis de antecedência pelo portal do RH."
+  },
+  {
+    "title": "Suporte técnico interno (Help Desk)",
+    "keywords": ["suporte", "help desk", "chamado", "ti", "atendimento", "ramal", "vpn"],
+    "content": "O Help Desk interno atende de segunda a sexta-feira, das 8h às 18h. Chamados devem ser abertos pelo portal interno em suporte.empresa.local ou pelo ramal 4000. Prioridades: crítica (sistema parado) com atendimento em até 1 hora; alta em até 4 horas; normal em até 2 dias úteis. Problemas de VPN devem ser registrados na categoria Rede. Senhas de sistemas corporativos nunca são solicitadas pelo suporte por e-mail ou telefone."
+  },
+  {
+    "title": "Reembolso de despesas",
+    "keywords": ["reembolso", "despesas", "viagem", "financeiro", "nota fiscal", "prazo"],
+    "content": "Despesas de viagem a trabalho são reembolsadas mediante envio da nota fiscal no sistema financeiro em até 30 dias após a despesa. O limite diário de alimentação é de R$ 120,00. Deslocamentos por aplicativo de transporte são aceitos quando acompanhados do recibo eletrônico. O reembolso é creditado na conta salário em até 10 dias úteis após a aprovação do gestor."
+  },
+  {
+    "title": "API da Groq",
+    "keywords": ["groq", "api", "llm", "chat completions", "modelo", "llama", "chave"],
+    "content": "A Groq oferece inferência rápida de modelos de linguagem por uma API compatível com o formato da OpenAI. O endpoint é https://api.groq.com/openai/v1/chat/completions e a autenticação usa o cabeçalho Authorization: Bearer <GROQ_API_KEY>. O corpo da requisição contém o modelo (por exemplo llama-3.3-70b-versatile) e a lista de mensagens com papéis system, user e assistant. A chave deve ficar em variável de ambiente e nunca no código-fonte ou no GitHub. Erros comuns: 401 (chave inválida) e 429 (limite de requisições)."
+  }
+]
