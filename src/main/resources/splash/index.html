@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Nexus Chat</title>
+  <link rel="stylesheet" href="splash.css">
+</head>
+<body>
+  <div class="card" id="card">
+    <div class="glow glow-a"></div>
+    <div class="glow glow-b"></div>
+
+    <!-- partículas de fundo (geradas no script) -->
+    <div class="stars" id="stars"></div>
+
+    <!-- rede neural: elemento visual principal -->
+    <svg class="network" id="network" viewBox="0 0 760 460" preserveAspectRatio="none">
+      <g id="links" stroke="url(#lineGradient)" stroke-width="1.4" fill="none"></g>
+      <g id="nodes"></g>
+      <defs>
+        <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#7c5cff" stop-opacity="0.75"/>
+          <stop offset="100%" stop-color="#22d3ee" stop-opacity="0.75"/>
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <div class="content">
+      <!-- logotipo -->
+      <div class="logo-wrap">
+        <div class="logo-ring"></div>
+        <svg class="logo" id="logo" viewBox="0 0 120 120">
+          <defs>
+            <linearGradient id="logoGradient" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#7c5cff"/>
+              <stop offset="100%" stop-color="#22d3ee"/>
+            </linearGradient>
+          </defs>
+          <rect x="4" y="4" width="112" height="112" rx="30" fill="url(#logoGradient)"/>
+          <path class="logo-stroke" d="M34 86 L34 34 L86 86 L86 34" stroke="#fff" stroke-width="9"
+                stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <circle class="logo-dot" cx="34" cy="86" r="9" fill="#fff"/>
+          <circle class="logo-dot" cx="34" cy="34" r="9" fill="#fff"/>
+          <circle class="logo-dot" cx="86" cy="86" r="9" fill="#fff"/>
+          <circle class="logo-dot" cx="86" cy="34" r="9" fill="#fff"/>
+        </svg>
+      </div>
+
+      <!-- nome da aplicação -->
+      <h1 class="title" id="title">Nexus Chat</h1>
+      <p class="tagline">Converse com IA usando o conhecimento da sua empresa</p>
+
+      <!-- elementos secundários -->
+      <ul class="chips">
+        <li>JavaFX</li>
+        <li>MongoDB Atlas</li>
+        <li>RAG</li>
+        <li>Groq</li>
+      </ul>
+
+      <div class="loader">
+        <div class="bar"><span id="bar-fill"></span></div>
+        <p class="status" id="status">Iniciando…</p>
+      </div>
+    </div>
+
+    <p class="version">v1.0.0</p>
+  </div>
+
+  <script src="gsap.min.js"></script>
+  <script src="splash.js"></script>
+</body>
+</html>
