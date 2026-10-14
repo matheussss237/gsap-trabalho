@@ -1,5 +1,5 @@
 /*
- * Animação de entrada do Nexus Chat (GSAP).
+ * Animação de entrada da Lumi (GSAP).
  *
  * Comunicação com o JavaFX:
  *   Java → JS : startIntro(), setStatus(texto, erro), playExit()
@@ -145,6 +145,9 @@ function startIdle() {
   idleTweens.push(gsap.to(".node", {
     opacity: 0.35, duration: 0.9, repeat: -1, yoyo: true, ease: "sine.inOut",
     stagger: { each: 0.12, from: "random" }
+  }));
+  idleTweens.push(gsap.to(".logo-light", {
+    scale: 1.35, transformOrigin: "50% 50%", duration: 0.8, repeat: -1, yoyo: true, ease: "sine.inOut"
   }));
   idleTweens.push(gsap.to(".glow-a", {
     x: 60, y: 30, duration: 3, repeat: -1, yoyo: true, ease: "sine.inOut"

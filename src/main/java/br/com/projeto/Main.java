@@ -1,69 +1,100 @@
 package br.com.projeto;
 
 import br.com.projeto.config.AppConfig;
-import br.com.projeto.config.AppContext;
-import br.com.projeto.config.MongoConnection;
+import br.com.projeto.controller.AuthController;
+import br.com.projeto.controller.ChatController;
 import br.com.projeto.controller.ThemeController;
-import br.com.projeto.service.ThemeService;
-import br.com.projeto.util.FxAsync;
-import br.com.projeto.view.ConnectionErrorView;
-import br.com.projeto.view.Navigator;
-import br.com.projeto.view.SplashBridge;
+import br.com.projeto.repository.ConversationRepository;
+import br.com.projeto.repository.DocumentRepository;
+import br.com.projeto.repository.MessageRepository;
+import br.com.projeto.repository.PasswordResetRepository;
+import br.com.projeto.repository.UserRepository;
+import br.com.projeto.service.AuthenticationService;
+import br.com.projeto.service.ChatService;
+import br.com.projeto.service.ConversationService;
+import br.com.projeto.service.GroqService;
+import br.com.projeto.service.PasswordRecoveryService;
+import br.com.projeto.service.RAGService;
+import br.com.projeto.util.Ui;
+import br.com.projeto.view.Components;
 import br.com.projeto.view.SplashView;
+import com.mongodb.client.MongoDatabase;
+import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.InputStream;
+import java.time.Clock;
 
 /**
- * Ponto de entrada JavaFX.
+ * Ponto de entrada da aplicação.
  *
- * Fluxo: Splash (WebView + GSAP) enquanto o MongoDB conecta em segundo plano
- *        → animação de saída → janela principal com a tela de Login.
+ * Fluxo: splash (WebView + GSAP) enquanto o MongoDB conecta em segundo plano
+ *        → animação de saída → janela principal com a tela de login.
+ *
+ * Também monta as dependências (Repository → Service → Controller) e faz a navegação entre telas.
  */
 public class Main extends Application {
 
-    private Stage primaryStage;
-    private SplashView splash;
-    private ThemeController themeController;
+    /** Main usada pelo IntelliJ e pelo instalador: carrega o JavaFX a partir do classpath. */
+    public static class Launcher {
+        public static void main(String[] args) {
+            Application.launch(Main.class, args);
+        }
+    }
 
-    private AppContext context;
+    private Stage stage;
+    private Scene scene;
+    private SplashView splash;
+    final ThemeController theme = new ThemeController();
+
+    // services (criados depois que o banco conecta)
+    AuthenticationService auth; // visível no pacote para a pré-visualização das telas
+    private ConversationService conversations;
+    private RAGService rag;
+    private ChatService chat;
+    private AuthController authController;
+
     private String initError;
-    private boolean splashAnimated = true;
-    private boolean introDone;
-    private boolean exitStarted;
-    private boolean mainShown;
+    private boolean ready, introDone, exitStarted, mainShown, splashAnimated = true;
 
     @Override
-    public void start(Stage stage) {
-        this.primaryStage = stage;
-        this.themeController = new ThemeController(new ThemeService());
-
+    public void start(Stage primaryStage) {
+        stage = primaryStage;
         splash = new SplashView();
         loadIcons(splash.stage());
-        SplashBridge bridge = new SplashBridge(this::onIntroDone, this::showMainWindow);
-        splash.load(bridge, () -> {
-            // WebView/GSAP indisponível: segue sem a animação
-            splashAnimated = false;
+        splash.load(new SplashView.Bridge(this::onIntroDone, this::showMainWindow), () -> {
+            splashAnimated = false; // WebView indisponível: segue sem a animação
             onIntroDone();
         });
         splash.stage().show();
         splash.setStatus("Conectando ao MongoDB Atlas…", false);
-
-        // conexão com o banco em paralelo à animação
-        initializeContext();
+        initialize();
         armWatchdog();
     }
 
-    private void initializeContext() {
-        FxAsync.run(AppContext::initialize, ctx -> {
-            context = ctx;
+    /** Conecta ao banco em segundo plano, enquanto a animação roda. */
+    private void initialize() {
+        Ui.async(() -> {
+            MongoDatabase db = AppConfig.connect();
+            createServices(db);
+            rag.seedIfEmpty();
+            return true;
+        }, ok -> {
+            ready = true;
             splash.setStatus("Tudo pronto!", false);
             tryExitSplash();
         }, error -> {
@@ -73,17 +104,27 @@ public class Main extends Application {
         });
     }
 
-    /** Segurança: se a animação não responder, a aplicação abre mesmo assim. */
-    private void armWatchdog() {
-        PauseTransition watchdog = new PauseTransition(Duration.seconds(20));
-        watchdog.setOnFinished(e -> {
-            if (!mainShown && initFinished()) {
-                showMainWindow();
-            } else if (!mainShown) {
-                armWatchdog();
-            }
-        });
-        watchdog.play();
+    private void createServices(MongoDatabase db) {
+        createServices(new UserRepository(db), new ConversationRepository(db), new MessageRepository(db),
+                new DocumentRepository(db), new PasswordResetRepository(db), new GroqService());
+    }
+
+    /** Injeção de dependências manual: Repository → Service → Controller. */
+    void createServices(UserRepository users, ConversationRepository conversationRepository, MessageRepository messages,
+                        DocumentRepository documents, PasswordResetRepository tokens, GroqService groq) {
+        auth = new AuthenticationService(users);
+        conversations = new ConversationService(conversationRepository, messages, auth);
+        rag = new RAGService(documents, auth);
+        chat = new ChatService(conversations, messages, rag, groq, auth);
+        PasswordRecoveryService recovery = new PasswordRecoveryService(auth, tokens, Clock.systemUTC());
+        authController = new AuthController(this, auth, recovery, theme);
+    }
+
+    /** Usado só pela pré-visualização das telas (testes): abre direto a janela principal. */
+    void startWithoutSplash(Stage primaryStage) {
+        stage = primaryStage;
+        ready = true;
+        showMainWindow();
     }
 
     private void onIntroDone() {
@@ -91,88 +132,142 @@ public class Main extends Application {
         tryExitSplash();
     }
 
-    private boolean initFinished() {
-        return context != null || initError != null;
-    }
-
-    /** Inicia a animação de saída quando a entrada terminou E o banco respondeu. */
+    /** A splash só sai quando a animação de entrada terminou E o banco respondeu. */
     private void tryExitSplash() {
-        if (!introDone || !initFinished() || exitStarted) {
-            return;
-        }
+        if (!introDone || !(ready || initError != null) || exitStarted) return;
         exitStarted = true;
         if (!splashAnimated) {
             showMainWindow();
             return;
         }
-        // pequena pausa para o usuário ler o status antes da saída
         PauseTransition pause = new PauseTransition(Duration.millis(initError == null ? 350 : 1200));
-        pause.setOnFinished(e -> splash.call("playExit()"));
+        pause.setOnFinished(e -> splash.call("playExit()")); // o GSAP chama javaBridge.finish() no fim
         pause.play();
     }
 
-    /** Fecha a splash e abre a janela principal (chamado pelo GSAP ao fim da saída). */
-    private void showMainWindow() {
-        if (mainShown || !initFinished()) {
-            return;
-        }
-        mainShown = true;
-        splash.stage().close();
-
-        primaryStage.setTitle(AppConfig.APP_NAME);
-        primaryStage.setMinWidth(760);
-        primaryStage.setMinHeight(560);
-        primaryStage.setWidth(1200);
-        primaryStage.setHeight(780);
-        loadIcons(primaryStage);
-
-        Scene scene = new Scene(new StackPane(), 1200, 780);
-        themeController.register(scene);
-        primaryStage.setScene(scene);
-
-        if (context != null) {
-            new Navigator(primaryStage, scene, context, themeController).showLogin(null, null);
-        } else {
-            showConnectionError(scene);
-        }
-        primaryStage.centerOnScreen();
-        primaryStage.show();
+    /** Segurança: se a animação travar, a aplicação abre mesmo assim. */
+    private void armWatchdog() {
+        PauseTransition watchdog = new PauseTransition(Duration.seconds(20));
+        watchdog.setOnFinished(e -> {
+            if (mainShown) return;
+            if (ready || initError != null) showMainWindow(); else armWatchdog();
+        });
+        watchdog.play();
     }
 
-    private void showConnectionError(Scene scene) {
-        ConnectionErrorView view = new ConnectionErrorView(initError);
-        view.exitButton().setOnAction(e -> Platform.exit());
-        view.retryButton().setOnAction(e -> {
-            view.retryButton().setLoading(true, "Conectando…");
-            MongoConnection.close();
+    private void showMainWindow() {
+        if (mainShown || !(ready || initError != null)) return;
+        mainShown = true;
+        if (splash != null) splash.stage().close();
+        scene = new Scene(new StackPane(), 1200, 780);
+        theme.register(scene);
+        stage.setScene(scene);
+        stage.setTitle(AppConfig.APP_NAME);
+        stage.setMinWidth(760);
+        stage.setMinHeight(560);
+        loadIcons(stage);
+        if (ready) showLogin(null, null); else showConnectionError();
+        stage.centerOnScreen();
+        stage.show();
+    }
+
+    // ---------- navegação ----------
+
+    public void showLogin(String email, String message) {
+        setRoot(authController.loginScreen(email, message), "Entrar");
+    }
+
+    public void showRegister() {
+        setRoot(authController.registerScreen(), "Criar conta");
+    }
+
+    public void showForgotPassword(String email) {
+        setRoot(authController.forgotPasswordScreen(email), "Recuperar senha");
+    }
+
+    public void showChat() {
+        ChatController controller = new ChatController(this, auth, conversations, chat, rag, theme);
+        setRoot(controller.view().root(), null);
+    }
+
+    /** Abre uma janela secundária (modal) com o mesmo tema. */
+    public Stage openWindow(Parent root, String title, double width, double height) {
+        Stage window = new Stage();
+        window.initOwner(stage);
+        window.initModality(Modality.WINDOW_MODAL);
+        window.setTitle(title + " — " + AppConfig.APP_NAME);
+        window.getIcons().setAll(stage.getIcons());
+        Scene windowScene = new Scene(root, width, height);
+        Runnable unregister = theme.register(windowScene);
+        window.setOnHidden(e -> unregister.run());
+        window.setScene(windowScene);
+        return window;
+    }
+
+    /** Troca o conteúdo da janela com um fade suave. */
+    private void setRoot(Parent root, String subtitle) {
+        stage.setTitle(subtitle == null ? AppConfig.APP_NAME : AppConfig.APP_NAME + " — " + subtitle);
+        root.setOpacity(0);
+        scene.setRoot(root);
+        FadeTransition fade = new FadeTransition(Duration.millis(260), root);
+        fade.setToValue(1);
+        fade.play();
+    }
+
+    /** Tela exibida quando o MongoDB não responde na inicialização. */
+    private void showConnectionError() {
+        Label message = Components.label(initError, "auth-subtitle");
+        message.setWrapText(true);
+        Label help = Components.label("Verifique a variável MONGODB_URI, sua conexão com a internet e se o seu IP "
+                + "está liberado em Network Access no MongoDB Atlas. Consulte o README.", "muted");
+        help.setWrapText(true);
+        Components.LoadingButton retry = new Components.LoadingButton("Tentar novamente");
+        retry.setMaxWidth(200);
+        Button exit = new Button("Sair");
+        exit.getStyleClass().add("secondary-button");
+        exit.setOnAction(e -> Platform.exit());
+        retry.setOnAction(e -> {
+            retry.setLoading(true, "Conectando…");
+            AppConfig.disconnect();
             AppConfig.reload();
-            FxAsync.run(AppContext::initialize, ctx -> {
-                context = ctx;
-                new Navigator(primaryStage, scene, context, themeController).showLogin(null, null);
+            Ui.async(() -> {
+                createServices(AppConfig.connect());
+                rag.seedIfEmpty();
+                return true;
+            }, ok -> {
+                ready = true;
+                showLogin(null, null);
             }, error -> {
-                view.retryButton().setLoading(false);
-                view.setMessage(error);
+                retry.setLoading(false, null);
+                message.setText(error);
             });
         });
-        scene.setRoot(view.root());
+        StackPane icon = new StackPane(Components.icon(Components.ALERT, 28));
+        icon.getStyleClass().add("error-icon");
+        VBox card = new VBox(16, icon, Components.label("Não foi possível iniciar", "auth-title"), message, help,
+                new HBox(10, retry, exit));
+        card.getStyleClass().add("auth-card");
+        card.setMaxSize(520, VBox.USE_PREF_SIZE);
+        StackPane root = new StackPane(card);
+        root.getStyleClass().add("auth-root");
+        root.setPadding(new Insets(32));
+        setRoot(root, "Erro de conexão");
     }
 
-    private void loadIcons(Stage stage) {
+    private void loadIcons(Stage target) {
         for (String size : new String[]{"16", "32", "64", "256"}) {
             InputStream in = getClass().getResourceAsStream("/images/icon-" + size + ".png");
-            if (in != null) {
-                stage.getIcons().add(new Image(in));
-            }
+            if (in != null) target.getIcons().add(new Image(in));
         }
     }
 
     @Override
     public void stop() {
-        FxAsync.shutdown();
-        MongoConnection.close();
+        Ui.shutdown();
+        AppConfig.disconnect();
     }
 
     public static void main(String[] args) {
-        launch(args);
+        Launcher.main(args);
     }
 }

@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.com.projeto</groupId>
-    <artifactId>nexus-chat</artifactId>
+    <artifactId>lumi</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>Nexus Chat</name>
+    <name>Lumi</name>
     <description>Aplicação desktop de chat com IA (JavaFX, MongoDB Atlas, RAG e Groq)</description>
 
     <properties>
@@ -24,7 +24,7 @@
         <junit.version>5.11.3</junit.version>
 
         <main.class>br.com.projeto.Main</main.class>
-        <launcher.class>br.com.projeto.Launcher</launcher.class>
+        <launcher.class>br.com.projeto.Main$Launcher</launcher.class>
     </properties>
 
     <dependencies>
@@ -79,7 +79,7 @@
     </dependencies>
 
     <build>
-        <finalName>nexus-chat</finalName>
+        <finalName>lumi</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

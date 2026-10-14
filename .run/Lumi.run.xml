@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Lumi" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="br.com.projeto.Main$Launcher" />
+    <module name="lumi" />
+    <option name="VM_PARAMETERS" value="-Dfile.encoding=UTF-8" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

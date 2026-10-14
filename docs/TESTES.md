@@ -1,20 +1,16 @@
 # Roteiro de testes
 
-## 1. Testes automatizados (`mvn test`)
+## 1. Testes automatizados (`mvn test` ou configuração "Testes" no IntelliJ)
 
-37 testes JUnit 5, executados com repositórios **em memória** e uma IA falsa
+23 testes JUnit 5 que usam repositórios **em memória** e uma IA falsa
 (não precisam de MongoDB nem de internet):
 
 | Classe | O que comprova |
 |---|---|
-| `AuthenticationServiceTest` | cadastro válido, cadastro duplicado, campos inválidos, senha incorreta, usuário inexistente, login/logout e bloqueio após logout |
-| `ConversationIsolationTest` | criar, renomear, excluir; **usuario1 ≠ conversas de usuario2** (usuario2 não lê, não renomeia e não exclui conversa do usuario1) |
-| `ChatServiceTest` | envio de pergunta, histórico persistido, contexto do RAG enviado à IA, memória da conversa, erro da API sem gravar mensagem pela metade, título automático |
-| `RagServiceTest` | palavra-chave existente, palavra-chave inexistente, cadastro de documento, isolamento de documentos por usuário |
-| `TextProcessingTest` | normalização, tokenização, **remoção de stop words**, redução de plural |
-| `DocumentScorerTest` | pontuação e ordenação dos documentos |
-| `PasswordRecoveryServiceTest` | fluxo completo, código expirado, limite de tentativas, código de uso único, e-mail inexistente |
-| `SecurityUtilsTest` | hash BCrypt (com salt), validações de e-mail e senha, código de 6 dígitos |
+| `AuthenticationTest` | cadastro válido, cadastro duplicado, campos inválidos, senha incorreta, usuário inexistente, login/logout, hash BCrypt com salt |
+| `ConversationIsolationTest` | criar, renomear, excluir; **usuario1 ≠ conversas de usuario2** (o usuario2 não lê, não renomeia e não exclui conversa do usuario1) |
+| `ChatAndRagTest` | envio de pergunta, histórico salvo, contexto do RAG e nome do usuário enviados à IA, memória da conversa, erro da API sem gravar nada pela metade; normalização, **remoção de stop words**, palavra-chave existente e inexistente, cadastro de documento |
+| `PasswordRecoveryTest` | fluxo completo, código expirado, limite de tentativas, código de uso único, e-mail inexistente |
 
 ## 2. Testes manuais (com MongoDB Atlas e Groq reais)
 
@@ -55,7 +51,7 @@ Marque cada item e salve a captura em `docs/evidencias/`.
 - [ ] No chat, perguntar "Qual é a política de home office da empresa?" → resposta cita 3 dias/semana e mostra "Fontes"
 
 ### Interface
-- [ ] Tema claro e tema escuro (botão sol/lua ou Configurações) — a escolha persiste ao reabrir
+- [ ] Tema claro e tema escuro (botão sol/lua) — a escolha persiste ao reabrir
 - [ ] Navegação login ↔ cadastro ↔ recuperação
 - [ ] Redimensionar: abaixo de ~820 px a sidebar recolhe (botão ☰ reabre) e o painel da marca do login some
 

@@ -3,7 +3,7 @@ package br.com.projeto.model;
 import java.time.Instant;
 
 /**
- * Token temporário de recuperação de senha. Apenas o hash SHA-256 do código é armazenado;
+ * Código temporário de recuperação de senha. Só o hash SHA-256 do código é armazenado;
  * o código em si só é conhecido por quem o recebeu.
  */
 public class PasswordResetToken {
@@ -32,22 +32,16 @@ public class PasswordResetToken {
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
-
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
-
     public String getTokenHash() { return tokenHash; }
     public void setTokenHash(String tokenHash) { this.tokenHash = tokenHash; }
-
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
-
     public Instant getExpiresAt() { return expiresAt; }
     public void setExpiresAt(Instant expiresAt) { this.expiresAt = expiresAt; }
-
     public boolean isUsed() { return used; }
     public void setUsed(boolean used) { this.used = used; }
-
     public int getAttempts() { return attempts; }
     public void setAttempts(int attempts) { this.attempts = attempts; }
 }

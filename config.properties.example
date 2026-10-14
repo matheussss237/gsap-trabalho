@@ -1,9 +1,9 @@
-# Copie este arquivo para %USERPROFILE%\.nexuschat\config.properties
-# (ou ~/.nexuschat/config.properties) se preferir não usar variáveis de ambiente.
+# Copie este arquivo para %USERPROFILE%\.lumi\config.properties
+# (ou ~/.lumi/config.properties) se preferir não usar variáveis de ambiente.
 # Variáveis de ambiente têm prioridade sobre este arquivo. NUNCA versione o arquivo real.
 
 MONGODB_URI=mongodb+srv://USUARIO:SENHA@SEU-CLUSTER.mongodb.net/?retryWrites=true&w=majority
-MONGODB_DATABASE=nexuschat
+MONGODB_DATABASE=lumi
 GROQ_API_KEY=gsk_sua_chave_aqui
 GROQ_MODEL=llama-3.3-70b-versatile
 
