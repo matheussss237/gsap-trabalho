@@ -25,7 +25,7 @@ if exist target\installer rmdir /s /q target\installer
 
 set COMMON=--name Lumi --app-version 1.0.0 --vendor "Lumi" ^
  --description "Chat desktop com IA (JavaFX, MongoDB Atlas, RAG e Groq)" ^
- --input target\dist --main-jar lumi.jar --main-class br.com.projeto.Main$Launcher ^
+ --input target\dist --main-jar lumi.jar --main-class com.matheushenrique.lumi.LumiApplication ^
  --icon packaging\icon.ico --dest target\installer ^
  --java-options "-Dfile.encoding=UTF-8" ^
  --add-modules java.base,java.desktop,java.logging,java.management,java.naming,java.net.http,java.prefs,java.scripting,java.security.jgss,java.sql,java.xml,java.xml.crypto,jdk.crypto.ec,jdk.jsobject,jdk.unsupported,jdk.xml.dom,jdk.localedata,jdk.charsets,jdk.naming.dns,jdk.net,jdk.zipfs

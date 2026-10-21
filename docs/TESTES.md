@@ -2,15 +2,15 @@
 
 ## 1. Testes automatizados (`mvn test` ou configuração "Testes" no IntelliJ)
 
-23 testes JUnit 5 que usam repositórios **em memória** e uma IA falsa
-(não precisam de MongoDB nem de internet):
+22 testes JUnit 5 que sobem o Spring de verdade com um **MongoDB falso em memória**
+(mongo-java-server) e uma IA falsa. Não precisam do Atlas nem de internet:
 
 | Classe | O que comprova |
 |---|---|
-| `AuthenticationTest` | cadastro válido, cadastro duplicado, campos inválidos, senha incorreta, usuário inexistente, login/logout, hash BCrypt com salt |
-| `ConversationIsolationTest` | criar, renomear, excluir; **usuario1 ≠ conversas de usuario2** (o usuario2 não lê, não renomeia e não exclui conversa do usuario1) |
-| `ChatAndRagTest` | envio de pergunta, histórico salvo, contexto do RAG e nome do usuário enviados à IA, memória da conversa, erro da API sem gravar nada pela metade; normalização, **remoção de stop words**, palavra-chave existente e inexistente, cadastro de documento |
-| `PasswordRecoveryTest` | fluxo completo, código expirado, limite de tentativas, código de uso único, e-mail inexistente |
+| `UsuarioServiceTest` | cadastro válido (senha salva como hash BCrypt), cadastro duplicado, campos inválidos, senha incorreta, usuário inexistente, login/logout |
+| `ConversaServiceTest` | criar, renomear, excluir e recarregar; **usuario1 ≠ conversas de usuario2** (o usuario2 não abre, não renomeia e não exclui a conversa do usuario1) |
+| `ChatERagTest` | envio de pergunta, histórico salvo, documento do RAG e nome do usuário enviados à IA, memória da conversa, erro da API sem salvar nada; normalização, **remoção de stop words**, palavra-chave existente e inexistente, cadastro de documento |
+| `RecuperacaoSenhaServiceTest` | fluxo completo, código vencido, limite de tentativas, código de uso único, e-mail inexistente |
 
 ## 2. Testes manuais (com MongoDB Atlas e Groq reais)
 

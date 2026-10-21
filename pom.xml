@@ -1,79 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>br.com.projeto</groupId>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.13</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.matheushenrique</groupId>
     <artifactId>lumi</artifactId>
     <version>1.0.0</version>
-    <packaging>jar</packaging>
-
-    <name>Lumi</name>
-    <description>Aplicação desktop de chat com IA (JavaFX, MongoDB Atlas, RAG e Groq)</description>
+    <name>lumi</name>
+    <description>Chat desktop com IA (JavaFX, Spring Boot, MongoDB Atlas, RAG e Groq)</description>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>21</maven.compiler.release>
-
+        <java.version>21</java.version>
         <javafx.version>21.0.5</javafx.version>
-        <mongodb.version>5.2.1</mongodb.version>
-        <gson.version>2.11.0</gson.version>
-        <jbcrypt.version>0.4</jbcrypt.version>
-        <angus.mail.version>2.0.3</angus.mail.version>
-        <junit.version>5.11.3</junit.version>
-
-        <main.class>br.com.projeto.Main</main.class>
-        <launcher.class>br.com.projeto.Main$Launcher</launcher.class>
+        <lombok.version>1.18.44</lombok.version>
     </properties>
 
     <dependencies>
-        <!-- Interface gráfica -->
+        <!-- MongoDB (repositories) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
+        <!-- envio do código de recuperação de senha por e-mail (opcional) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <!-- BCryptPasswordEncoder para guardar as senhas -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+        </dependency>
+
+        <!-- telas -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
         </dependency>
-        <!-- WebView/WebEngine: executa a animação GSAP da splash screen -->
+        <!-- WebView: roda a animação GSAP da splash -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <version>${javafx.version}</version>
         </dependency>
 
-        <!-- Banco de dados (MongoDB Atlas) -->
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-sync</artifactId>
-            <version>${mongodb.version}</version>
-        </dependency>
-
-        <!-- JSON para a API da Groq -->
+        <!-- JSON da API da Groq -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
         </dependency>
 
-        <!-- Hash de senhas (BCrypt) -->
         <dependency>
-            <groupId>org.mindrot</groupId>
-            <artifactId>jbcrypt</artifactId>
-            <version>${jbcrypt.version}</version>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <optional>true</optional>
         </dependency>
 
-        <!-- Envio de e-mail na recuperação de senha (opcional, via SMTP) -->
         <dependency>
-            <groupId>org.eclipse.angus</groupId>
-            <artifactId>angus-mail</artifactId>
-            <version>${angus.mail.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
-
-        <!-- Testes -->
+        <!-- MongoDB falso em memória, só para os testes (não precisa de Atlas nem de internet) -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit.version}</version>
+            <groupId>de.bwaldvogel</groupId>
+            <artifactId>mongo-java-server</artifactId>
+            <version>1.47.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -84,47 +87,56 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.2</version>
-            </plugin>
-
-            <!-- mvn javafx:run -->
-            <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.8</version>
                 <configuration>
-                    <mainClass>${main.class}</mainClass>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
 
-            <!-- Jar da aplicação com Main-Class e Class-Path apontando para libs/ -->
+            <!-- mvn spring-boot:run -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <!-- o instalador usa o jar normal + pasta libs/ (não o "fat jar") -->
+                    <execution>
+                        <id>repackage</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- jar com Main-Class e Class-Path apontando para libs/ (entrada do jpackage) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.2</version>
                 <configuration>
                     <outputDirectory>${project.build.directory}/dist</outputDirectory>
                     <archive>
                         <manifest>
-                            <mainClass>${launcher.class}</mainClass>
+                            <mainClass>com.matheushenrique.lumi.LumiApplication</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
-
-            <!-- Copia as dependências para target/dist/libs (entrada do jpackage) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.8.1</version>
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
@@ -135,6 +147,7 @@
                         <configuration>
                             <outputDirectory>${project.build.directory}/dist/libs</outputDirectory>
                             <includeScope>runtime</includeScope>
+                            <excludeArtifactIds>lombok</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>

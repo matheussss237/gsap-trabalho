@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Testes" type="JUnit" factoryName="JUnit">
     <module name="lumi" />
-    <option name="PACKAGE_NAME" value="br.com.projeto" />
+    <option name="PACKAGE_NAME" value="com.matheushenrique.lumi" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="package" />
